@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { FeedListClient } from "./FeedListClient";
 
 export const metadata: Metadata = {
   title: "フィード一覧 | RSS Reader",
@@ -41,6 +42,46 @@ const feeds: Feed[] = [
     latestArticleUrl: "https://developer.mozilla.org/en-US/blog/",
     updatedAt: "2024-08-20T00:00:00.000Z",
   },
+  {
+    id: "4",
+    title: "TypeScript Blog",
+    description: "TypeScript の公式ブログ",
+    siteUrl: "https://devblogs.microsoft.com/typescript/",
+    latestArticleUrl: "https://devblogs.microsoft.com/typescript/announcing-typescript-5-6/",
+    updatedAt: "2024-10-05T00:00:00.000Z",
+  },
+  {
+    id: "5",
+    title: "React Blog",
+    description: "React のブログ",
+    siteUrl: "https://react.dev/blog",
+    latestArticleUrl: "https://react.dev/blog/2024/08/01/react-19",
+    updatedAt: "2024-08-01T00:00:00.000Z",
+  },
+  {
+    id: "6",
+    title: "WebKit Blog",
+    description: "WebKit の更新情報",
+    siteUrl: "https://webkit.org/blog/",
+    latestArticleUrl: "https://webkit.org/blog/15000/webkit-updates/",
+    updatedAt: "2024-09-10T00:00:00.000Z",
+  },
+  {
+    id: "7",
+    title: "Chromium Blog",
+    description: "Chrome/Chromium の開発ブログ",
+    siteUrl: "https://blog.chromium.org/",
+    latestArticleUrl: "https://blog.chromium.org/2024/09/chrome-updates.html",
+    updatedAt: "2024-09-20T00:00:00.000Z",
+  },
+  {
+    id: "8",
+    title: "Node.js Blog",
+    description: "Node.js リリース情報",
+    siteUrl: "https://nodejs.org/en/blog",
+    latestArticleUrl: "https://nodejs.org/en/blog/release/v22.9.0",
+    updatedAt: "2024-09-25T00:00:00.000Z",
+  },
 ];
 
 export default function FeedPage() {
@@ -48,58 +89,7 @@ export default function FeedPage() {
     <main className="font-sans mx-auto max-w-6xl px-4 py-10">
       <h1 className="text-2xl font-semibold tracking-tight mb-6">フィード一覧</h1>
 
-      <section aria-label="フィード一覧" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {feeds.map((f) => (
-          <article
-            key={f.id}
-            aria-labelledby={`card-${f.id}-title`}
-            className="rounded-xl ring-1 ring-black/10 dark:ring-white/10 bg-white dark:bg-neutral-900 shadow-sm hover:shadow-md transition-shadow focus-within:ring-black/20 dark:focus-within:ring-white/20"
-          >
-            <div className="p-5">
-              <h2 id={`card-${f.id}-title`} className="text-lg font-medium mb-2">
-                {f.title}
-              </h2>
-              <p className="text-sm text-neutral-600 dark:text-neutral-300 mb-4">
-                {f.description}
-              </p>
-
-              <dl className="text-xs text-neutral-500 dark:text-neutral-400 mb-4">
-                <dt className="sr-only">更新日</dt>
-                <dd>
-                  <time dateTime={f.updatedAt}>
-                    更新: {new Date(f.updatedAt).toLocaleDateString(undefined, {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </time>
-                </dd>
-              </dl>
-
-              <div className="flex gap-3">
-                <a
-                  href={f.siteUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center rounded-md border border-neutral-300 dark:border-neutral-700 px-3 py-1.5 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-black/40 dark:focus-visible:ring-white/40"
-                  aria-label={`${f.title} のサイトを開く`}
-                >
-                  サイト
-                </a>
-                <a
-                  href={f.latestArticleUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center rounded-md bg-neutral-900 text-white dark:bg-white dark:text-black px-3 py-1.5 text-sm hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-black/40 dark:focus-visible:ring-white/40"
-                  aria-label={`${f.title} の最新記事を開く`}
-                >
-                  最新記事
-                </a>
-              </div>
-            </div>
-          </article>
-        ))}
-      </section>
+      <FeedListClient feeds={feeds} />
     </main>
   );
 }

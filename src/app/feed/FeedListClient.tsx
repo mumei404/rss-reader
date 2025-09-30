@@ -137,7 +137,15 @@ export function FeedListClient({ feeds }: { feeds: Feed[] }) {
                     }`}
                     aria-label={`${f.title} を後で読むに${isLater ? "解除" : "追加"}`}
                   >
-                    {isLater ? "saved" : "read later"}
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                      className="h-4 w-4"
+                      fill="currentColor"
+                    >
+                      <path d="M6 2h12a2 2 0 0 1 2 2v18l-8-4-8 4V4a2 2 0 0 1 2-2z" />
+                    </svg>
+                    <span className="sr-only">{isLater ? "saved" : "read later"}</span>
                   </button>
                   <button
                     type="button"
@@ -150,7 +158,19 @@ export function FeedListClient({ feeds }: { feeds: Feed[] }) {
                     }`}
                     aria-label={`${f.title} を${isRead ? "未読に戻す" : "既読にする"}`}
                   >
-                    {isRead ? "read" : "mark read"}
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <span className="sr-only">{isRead ? "read" : "mark read"}</span>
                   </button>
                 </div>
               </div>

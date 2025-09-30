@@ -11,3 +11,4 @@
    - 実装
    - commit, push
    - PRを作成し、issue番号をリンク(Closes #issue_number)
+- 作業中に発生するすべての一時ファイル（Issue/PR本文、下書き、スクリプト生成物など）は、必ずリポジトリ直下の ./tmp 配下に保存してください。gh の --body-file で本文パスを指定する場合も ./tmp 配下のファイルを使用してください（例: ./tmp/issue-body.md）。

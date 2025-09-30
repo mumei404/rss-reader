@@ -97,7 +97,7 @@ export function FeedListClient({ feeds }: { feeds: Feed[] }) {
                   <dt className="sr-only">更新日</dt>
                   <dd>
                     <time dateTime={f.updatedAt}>
-                      更新: {new Date(f.updatedAt).toLocaleDateString(undefined, {
+                      更新: {new Date(f.updatedAt).toLocaleDateString("ja-JP", {
                         year: "numeric",
                         month: "short",
                         day: "numeric",

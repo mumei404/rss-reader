@@ -11,3 +11,4 @@
    - 実装
    - commit, push
    - PRを作成し、issue番号をリンク(Closes #issue_number)
+- gh の --body-file で本文パスを指定する場合は、必ずリポジトリ直下の ./tmp 配下のファイルを使用してください（例: ./tmp/issue-body.md）。

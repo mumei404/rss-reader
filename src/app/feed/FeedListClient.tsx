@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Feed = {
   id: string;
@@ -19,7 +19,9 @@ function hostname(url: string): string {
   }
 }
 
-export function FeedListClient({ feeds }: { feeds: Feed[] }) {
+type Mode = "all" | "read-later";
+
+export function FeedListClient({ feeds, mode = "all" }: { feeds: Feed[]; mode?: Mode }) {
   const sites = useMemo(() => {
     const hs = Array.from(new Set(feeds.map((f) => hostname(f.siteUrl))));
     return hs.sort((a, b) => a.localeCompare(b));
@@ -29,16 +31,54 @@ export function FeedListClient({ feeds }: { feeds: Feed[] }) {
   const [readLater, setReadLater] = useState<Set<string>>(new Set());
   const [read, setRead] = useState<Set<string>>(new Set());
 
+  useEffect(() => {
+    try {
+      const r = JSON.parse(localStorage.getItem("readFeedIds") || "[]");
+      const rl = JSON.parse(localStorage.getItem("readLaterFeedIds") || "[]");
+      if (Array.isArray(r)) setRead(new Set(r));
+      if (Array.isArray(rl)) setReadLater(new Set(rl));
+    } catch (error) {
+      console.warn("localStorage読み込みエラー:", error);
+    }
+  }, []);
+
   const filtered = useMemo(() => {
     if (!siteFilter) return feeds;
     return feeds.filter((f) => hostname(f.siteUrl) === siteFilter);
   }, [feeds, siteFilter]);
+
+  const displayed = useMemo(() => {
+    switch (mode) {
+      case "read-later":
+        return filtered.filter((f) => readLater.has(f.id));
+      case "all":
+      default:
+        return filtered.filter((f) => !read.has(f.id));
+    }
+  }, [filtered, read, readLater, mode]);
+
+  const saveReadLater = (set: Set<string>) => {
+    try {
+      localStorage.setItem("readLaterFeedIds", JSON.stringify(Array.from(set)));
+    } catch (error) {
+      console.warn("localStorage保存エラー (readLaterFeedIds):", error);
+    }
+  };
+
+  const saveRead = (set: Set<string>) => {
+    try {
+      localStorage.setItem("readFeedIds", JSON.stringify(Array.from(set)));
+    } catch (error) {
+      console.warn("localStorage保存エラー (readFeedIds):", error);
+    }
+  };
 
   const toggleReadLater = (id: string) => {
     setReadLater((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
+      saveReadLater(next);
       return next;
     });
   };
@@ -48,6 +88,7 @@ export function FeedListClient({ feeds }: { feeds: Feed[] }) {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
+      saveRead(next);
       return next;
     });
   };
@@ -76,7 +117,7 @@ export function FeedListClient({ feeds }: { feeds: Feed[] }) {
       </div>
 
       <section aria-label="フィード一覧" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filtered.map((f) => {
+        {displayed.map((f) => {
           const isLater = readLater.has(f.id);
           const isRead = read.has(f.id);
           return (

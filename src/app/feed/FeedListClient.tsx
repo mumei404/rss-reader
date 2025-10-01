@@ -37,20 +37,10 @@ export function FeedListClient({ feeds, mode = "all" }: { feeds: Feed[]; mode?: 
       const rl = JSON.parse(localStorage.getItem("readLaterFeedIds") || "[]");
       if (Array.isArray(r)) setRead(new Set(r));
       if (Array.isArray(rl)) setReadLater(new Set(rl));
-    } catch {}
+    } catch (error) {
+      console.warn("localStorage読み込みエラー:", error);
+    }
   }, []);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem("readFeedIds", JSON.stringify(Array.from(read)));
-    } catch {}
-  }, [read]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem("readLaterFeedIds", JSON.stringify(Array.from(readLater)));
-    } catch {}
-  }, [readLater]);
 
   const filtered = useMemo(() => {
     if (!siteFilter) return feeds;
@@ -58,15 +48,37 @@ export function FeedListClient({ feeds, mode = "all" }: { feeds: Feed[]; mode?: 
   }, [feeds, siteFilter]);
 
   const displayed = useMemo(() => {
-    if (mode === "read-later") return filtered.filter((f) => readLater.has(f.id));
-    return filtered.filter((f) => !read.has(f.id));
+    switch (mode) {
+      case "read-later":
+        return filtered.filter((f) => readLater.has(f.id));
+      case "all":
+      default:
+        return filtered.filter((f) => !read.has(f.id));
+    }
   }, [filtered, read, readLater, mode]);
+
+  const saveReadLater = (set: Set<string>) => {
+    try {
+      localStorage.setItem("readLaterFeedIds", JSON.stringify(Array.from(set)));
+    } catch (error) {
+      console.warn("localStorage保存エラー (readLaterFeedIds):", error);
+    }
+  };
+
+  const saveRead = (set: Set<string>) => {
+    try {
+      localStorage.setItem("readFeedIds", JSON.stringify(Array.from(set)));
+    } catch (error) {
+      console.warn("localStorage保存エラー (readFeedIds):", error);
+    }
+  };
 
   const toggleReadLater = (id: string) => {
     setReadLater((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
+      saveReadLater(next);
       return next;
     });
   };
@@ -76,6 +88,7 @@ export function FeedListClient({ feeds, mode = "all" }: { feeds: Feed[]; mode?: 
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
+      saveRead(next);
       return next;
     });
   };
